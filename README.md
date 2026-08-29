@@ -9,6 +9,9 @@ The detection radius includes the highlighted tile.
 
 Changelog:
 
+v1.31:
+ok I found correct layer to work on. And now detection radius look less terrible in fog of war.
+
 v1.3:
 Now you can see detection tile when aiming, This could be turned off on MCM menu.
 This mod also now requires MCM because of this.
