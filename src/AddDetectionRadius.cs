@@ -21,7 +21,7 @@ namespace ShowDetectionRadiusLive
             private static readonly Queue<GameObject> _pool = new Queue<GameObject>();
             private static readonly List<GameObject> _activeTiles = new List<GameObject>();
 
-            private static readonly Color TargetGreenColor = new Color(0f, 1f, 0f, 0.5f);
+            private static readonly Color TargetGreenColor = new Color(0f, 1f, 0f, 0.25f);
 
             private static readonly int RendererColorID = Shader.PropertyToID("_RendererColor");
             private static readonly int ColorID = Shader.PropertyToID("_Color");
@@ -29,8 +29,7 @@ namespace ShowDetectionRadiusLive
 
             private static readonly MaterialPropertyBlock _propBlock = new MaterialPropertyBlock();
 
-            // Tracks Fog of War cells modified by custom logic
-            public static readonly HashSet<CellPosition> ModifiedFowPositions = new HashSet<CellPosition>();
+
 
             // Create a static pure white fallback texture
             private static Texture2D _whiteTexture;
@@ -67,13 +66,15 @@ namespace ShowDetectionRadiusLive
 
                     tile.transform.localScale = template.transform.localScale;
 
-                    SpriteRenderer templateSR = template.GetComponent<SpriteRenderer>();
                     SpriteRenderer cloneSR = tile.GetComponent<SpriteRenderer>();
 
-                    if (templateSR != null && cloneSR != null)
+                    if (cloneSR != null)
                     {
-                        cloneSR.sortingLayerID = templateSR.sortingLayerID;
-                        cloneSR.sortingOrder = templateSR.sortingOrder + 1;
+                        // === HARDCODED FOG-OF-WAR BYPASS ===
+                        // Force the sprite onto the exact layer and order used by UI signals
+                        cloneSR.sortingLayerID = SortingLayer.NameToID("Doors");
+                        cloneSR.sortingOrder = 5; // 7 ensures it draws just above the signal (6)
+
                         cloneSR.enabled = true;
                     }
 
@@ -86,7 +87,6 @@ namespace ShowDetectionRadiusLive
                 {
                     sr.GetPropertyBlock(_propBlock);
 
-                    // Override the red texture with a pure white texture so green tinting works
                     _propBlock.SetTexture(MainTexID, GetWhiteTexture());
                     _propBlock.SetColor(RendererColorID, TargetGreenColor);
                     _propBlock.SetColor(ColorID, TargetGreenColor);
@@ -111,24 +111,6 @@ namespace ShowDetectionRadiusLive
                 }
                 _activeTiles.Clear();
 
-                // 2. Restore Fog of War pixels back to black
-                if (ModifiedFowPositions.Count > 0)
-                {
-                    FogOfWar fow_instance = UnityEngine.Object.FindObjectOfType<FogOfWar>();
-                    if (fow_instance != null && fow_instance._unexploredTexture != null)
-                    {
-                        Color defaultBlack = new Color(0f, 0f, 0f, 1f); // Black unexplored FoW color
-
-                        foreach (CellPosition pos in ModifiedFowPositions)
-                        {
-                            fow_instance._unexploredTexture.SetPixel(pos.X, pos.Y, defaultBlack);
-                        }
-
-                        fow_instance._unexploredTexture.Apply();
-                    }
-
-                    ModifiedFowPositions.Clear();
-                }
             }
         }
 
@@ -161,34 +143,11 @@ namespace ShowDetectionRadiusLive
 
             foreach (CellPosition pos in radiusEdgePositions)
             {
-                MapCell tempCell = __instance._mapGrid?.GetCell(pos, true);
-                if (tempCell == null) continue;
 
-                if (tempCell.IsExplored)
-                {
-                    Vector3 worldPos = DrawHelper.FromCellToWorldPosition(pos.X, pos.Y, __instance._mapRenderer);
-                    GameObject greenTile = CustomTilePool.GetTile(templateTile, worldPos, templateTile.transform.parent);
-                }
-                else
-                {
-                    if (fowInstance == null)
-                    {
-                        fowInstance = UnityEngine.Object.FindObjectOfType<FogOfWar>();
-                    }
-
-                    if (fowInstance?._unexploredTexture != null)
-                    {
-                        fowInstance._unexploredTexture.SetPixel(pos.X, pos.Y, new Color(0f, 0.459f, 0f, 0.8f));
-                        CustomTilePool.ModifiedFowPositions.Add(pos);
-                        fowUpdated = true;
-                    }
-                }
+                Vector3 worldPos = DrawHelper.FromCellToWorldPosition(pos.X, pos.Y, __instance._mapRenderer);
+                GameObject greenTile = CustomTilePool.GetTile(templateTile, worldPos, templateTile.transform.parent);
             }
 
-            if (fowUpdated && fowInstance?._unexploredTexture != null)
-            {
-                fowInstance._unexploredTexture.Apply();
-            }
         }
 
         private static void CollectRadiusEdgeCells(CellPosition center, int radius, HashSet<CellPosition> radiusPositions, SelectTargetView instance)
