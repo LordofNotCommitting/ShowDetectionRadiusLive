@@ -3,9 +3,9 @@ You could be playing Jan. and now your detection radius is HUGE. But you have no
 This mod displays detection radius when you are in sneak or any other method of detection via implant/augment.
 When in normal mode, manual aiming (by default bound to SHIFT key) when you are capable of detection will display detection area.
 This also works on minimap. Also only works when you are capable of detection.
-[b]The detection radius includes the highlighted tile.[/b]
+The detection radius includes the highlighted tile.
 
-[h2]Need to restart the game after MCM config setup for this mod to take effect[/h2] 
+**Need to restart the game after MCM config setup for this mod to take effect**
 
 Changelog:
 
