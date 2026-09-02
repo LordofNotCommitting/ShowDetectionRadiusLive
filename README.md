@@ -9,6 +9,10 @@ The detection radius includes the highlighted tile.
 
 Changelog:
 
+v1.32:
+Now have edge only display if you think tile based one look ugly and/or intrusive.
+Can be turned on via MCM. Although you can turn both on if you are really blind.
+
 v1.31:
 ok I found correct layer to work on. And now detection radius look less terrible in fog of war.
 
