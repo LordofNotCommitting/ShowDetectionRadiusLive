@@ -18,7 +18,10 @@ namespace ShowDetectionRadiusLive
             this.ModName = ModName;
             this.ModData = new ModConfigData(ConfigPath);
             this.ModData.AddConfigHeader("General Settings", "general");
-            this.ModData.AddConfigValue("general", "Radius_When_Aim", true, "Show Detection Radius W/ Aim", "Enable to Show detection radius in your vision when aiming happens.");
+            this.ModData.AddConfigValue("general", "Tile_Vision", true, "Tile Detection View", "Enable to Show detection radius as tile in your vision when aiming happens.");
+
+            this.ModData.AddConfigValue("general", "Edge_Vision", false, "Edge Line Detection View", "Enable to Show detection radius as Edge in your vision when aiming happens.");
+
             this.ModData.AddConfigValue("general", "about_final", "<color=#f51b1b>The game must be restarted after setting then saving this config to take effect.</color>\n");
 
             //this.ModData.AddConfigValue("general", "Debug_Log_On", false, "Debug Log", "For personal debugging. DO NOT TURN IT ON if you don't intend to.");

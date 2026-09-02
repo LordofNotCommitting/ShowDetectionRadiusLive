@@ -15,15 +15,23 @@ namespace ShowDetectionRadiusLive
     public static class SelectTargetView_FreeHitHints_Patch
     {
 
-        static bool Radius_When_Aim = Plugin.ConfigGeneral.ModData.GetConfigValue<bool>("Radius_When_Aim", true);
+        static bool Tile_Vision = Plugin.ConfigGeneral.ModData.GetConfigValue<bool>("Tile_Vision", true);
+        static bool Edge_Vision = Plugin.ConfigGeneral.ModData.GetConfigValue<bool>("Edge_Vision", true);
         public static void Postfix(SelectTargetView __instance)
         {
             // Recycle custom tiles when targeting coroutines halt
             //Plugin.Logger.Log("AAAAAAAAAAAAAAAAAAAAAAAAAAA");
-            if (Radius_When_Aim)
+            if (Tile_Vision)
             {
                 CustomTilePool.RecycleAll();
             }
+            if (Edge_Vision)
+            {
+                LinePool.RecycleAll();
+            }
+
+
+            
         }
     }
 
